@@ -1507,9 +1507,457 @@
                 padding: 2rem 0;
             }
         }
+
+        /* ============================================
+           ELITE VISUAL EFFECTS
+           ============================================ */
+
+        /* Scroll Progress Indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient-primary);
+            z-index: 10000;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5), 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-accent-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+            mix-blend-mode: difference;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--color-accent-secondary);
+        }
+
+        .custom-cursor.clicking {
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+        }
+
+        @media (hover: none) {
+            .custom-cursor,
+            .cursor-dot {
+                display: none;
+            }
+        }
+
+        /* Particle Canvas */
+        .particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Animated Gradient Blobs */
+        .gradient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: blob-float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.3) 0%, transparent 70%);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: -7s;
+        }
+
+        .blob-3 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(52, 211, 153, 0.25) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes blob-float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+            50% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
+            75% {
+                transform: translate(20px, 10px) scale(1.05);
+            }
+        }
+
+        .blob-3 {
+            animation-name: blob-float-center;
+        }
+
+        @keyframes blob-float-center {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            25% {
+                transform: translate(-45%, -55%) scale(1.1);
+            }
+            50% {
+                transform: translate(-55%, -45%) scale(0.95);
+            }
+            75% {
+                transform: translate(-48%, -52%) scale(1.05);
+            }
+        }
+
+        /* 3D Tilt Card Effects */
+        .tilt-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .service-card,
+        .portfolio-card,
+        .testimonial-card,
+        .process-step {
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+
+        .service-card:hover,
+        .portfolio-card:hover,
+        .testimonial-card:hover {
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(16, 185, 129, 0.1);
+        }
+
+        .card-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 50%,
+                transparent 100%
+            );
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        .service-card:hover .card-shine,
+        .portfolio-card:hover .card-shine,
+        .testimonial-card:hover .card-shine {
+            opacity: 1;
+        }
+
+        /* Magnetic Button Effect */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            border-radius: 50%;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-magnetic {
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Animated Counter */
+        .stat-value {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-value.counting {
+            animation: count-pulse 0.1s ease-in-out;
+        }
+
+        @keyframes count-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Text Reveal Animation */
+        .reveal-text {
+            overflow: hidden;
+        }
+
+        .reveal-text .word {
+            display: inline-block;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+        }
+
+        .reveal-text.revealed .word {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .hero-title .word {
+            animation: word-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        @keyframes word-reveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Glowing border effect for featured cards */
+        .glow-border {
+            position: relative;
+        }
+
+        .glow-border::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: var(--gradient-primary);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            filter: blur(8px);
+        }
+
+        .glow-border:hover::after {
+            opacity: 0.5;
+        }
+
+        /* Floating animation for hero elements */
+        .float-animation {
+            animation: gentle-float 6s ease-in-out infinite;
+        }
+
+        @keyframes gentle-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Staggered fade-in for hero content */
+        .hero-content > * {
+            opacity: 0;
+            animation: hero-stagger 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hero-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .hero-content > *:nth-child(2) { animation-delay: 0.2s; }
+        .hero-content > *:nth-child(3) { animation-delay: 0.3s; }
+        .hero-content > *:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes hero-stagger {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section parallax depth */
+        .parallax-section {
+            transform-style: preserve-3d;
+        }
+
+        /* Enhanced gradient text animation */
+        .gradient-text {
+            background-size: 200% 200%;
+            animation: gradient-shift 8s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Noise texture overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Smooth page transitions */
+        .page-transition {
+            animation: page-enter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes page-enter {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Interactive hover line under nav links */
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        /* Process step connecting line animation */
+        .process-grid::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+                transparent,
+                var(--color-accent-primary) 10%,
+                var(--color-accent-tertiary) 90%,
+                transparent
+            );
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .process-grid {
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .process-grid::before {
+                display: none;
+            }
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .gradient-blob,
+            .hero-content > *,
+            .gradient-text,
+            .float-animation,
+            .custom-cursor,
+            .cursor-dot,
+            .particle-canvas {
+                animation: none !important;
+                transition: none !important;
+            }
+
+            .hero-content > * {
+                opacity: 1;
+                transform: none;
+            }
+        }
     </style>
 </head>
-<body>
+<body class="page-transition">
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+
+    <!-- Noise Texture Overlay -->
+    <div class="noise-overlay" aria-hidden="true"></div>
+
     <!-- Skip link for accessibility -->
     <a href="#main" class="skip-link">Skip to main content</a>
 
@@ -1565,6 +2013,14 @@
     <main id="main">
         <!-- Hero Section -->
         <section class="hero" aria-labelledby="hero-title">
+            <!-- Particle Constellation Canvas -->
+            <canvas class="particle-canvas" id="particle-canvas" aria-hidden="true"></canvas>
+
+            <!-- Animated Gradient Blobs -->
+            <div class="gradient-blob blob-1" aria-hidden="true"></div>
+            <div class="gradient-blob blob-2" aria-hidden="true"></div>
+            <div class="gradient-blob blob-3" aria-hidden="true"></div>
+
             <div class="container">
                 <div class="hero-content">
                     <div class="hero-badge">
@@ -2214,6 +2670,402 @@
                 menuToggle?.focus();
             }
         });
+
+        // ============================================
+        // ELITE VISUAL EFFECTS
+        // ============================================
+
+        // Check for reduced motion preference
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ============================================
+        // 1. SCROLL PROGRESS INDICATOR
+        // ============================================
+        const scrollProgress = document.querySelector('.scroll-progress');
+
+        function updateScrollProgress() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        }
+
+        window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+        // ============================================
+        // 2. CUSTOM CURSOR
+        // ============================================
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+
+        if (cursor && cursorDot && window.matchMedia('(hover: hover)').matches && !prefersReducedMotion) {
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursorDot.style.left = mouseX + 'px';
+                cursorDot.style.top = mouseY + 'px';
+            });
+
+            function animateCursor() {
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+                cursor.style.left = cursorX + 'px';
+                cursor.style.top = cursorY + 'px';
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+
+            // Hover effect on interactive elements
+            const interactiveElements = document.querySelectorAll('a, button, .btn, .service-card, .portfolio-card, .testimonial-card');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+            });
+
+            // Click effect
+            document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+            document.addEventListener('mouseup', () => cursor.classList.remove('clicking'));
+        }
+
+        // ============================================
+        // 3. PARTICLE CONSTELLATION SYSTEM
+        // ============================================
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas?.getContext('2d');
+
+        if (canvas && ctx && !prefersReducedMotion) {
+            let particles = [];
+            let mouse = { x: null, y: null, radius: 150 };
+
+            function resizeCanvas() {
+                const hero = document.querySelector('.hero');
+                canvas.width = hero.offsetWidth;
+                canvas.height = hero.offsetHeight;
+            }
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 1;
+                    this.baseX = this.x;
+                    this.baseY = this.y;
+                    this.density = (Math.random() * 30) + 1;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                }
+
+                draw() {
+                    ctx.fillStyle = 'rgba(16, 185, 129, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                update() {
+                    // Mouse interaction
+                    if (mouse.x !== null && mouse.y !== null) {
+                        let dx = mouse.x - this.x;
+                        let dy = mouse.y - this.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < mouse.radius) {
+                            let forceDirectionX = dx / distance;
+                            let forceDirectionY = dy / distance;
+                            let maxDistance = mouse.radius;
+                            let force = (maxDistance - distance) / maxDistance;
+                            let directionX = forceDirectionX * force * this.density;
+                            let directionY = forceDirectionY * force * this.density;
+
+                            this.x -= directionX * 2;
+                            this.y -= directionY * 2;
+                        }
+                    }
+
+                    // Gentle floating motion
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    // Return to base with elastic effect
+                    let dx = this.baseX - this.x;
+                    let dy = this.baseY - this.y;
+                    this.x += dx * 0.02;
+                    this.y += dy * 0.02;
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                const numberOfParticles = Math.floor((canvas.width * canvas.height) / 12000);
+                for (let i = 0; i < numberOfParticles; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function connectParticles() {
+                const maxDistance = 120;
+                for (let a = 0; a < particles.length; a++) {
+                    for (let b = a + 1; b < particles.length; b++) {
+                        let dx = particles[a].x - particles[b].x;
+                        let dy = particles[a].y - particles[b].y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < maxDistance) {
+                            let opacity = 1 - (distance / maxDistance);
+                            ctx.strokeStyle = `rgba(16, 185, 129, ${opacity * 0.3})`;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(particles[b].x, particles[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                connectParticles();
+                requestAnimationFrame(animateParticles);
+            }
+
+            // Mouse tracking relative to hero
+            const hero = document.querySelector('.hero');
+            hero.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+
+            hero.addEventListener('mouseleave', () => {
+                mouse.x = null;
+                mouse.y = null;
+            });
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initParticles();
+            });
+
+            resizeCanvas();
+            initParticles();
+            animateParticles();
+        }
+
+        // ============================================
+        // 4. 3D TILT EFFECT FOR CARDS
+        // ============================================
+        const tiltCards = document.querySelectorAll('.service-card, .portfolio-card, .testimonial-card');
+
+        if (!prefersReducedMotion) {
+            tiltCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 15;
+                    const rotateY = (centerX - x) / 15;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                });
+            });
+        }
+
+        // ============================================
+        // 5. ANIMATED COUNTER FOR STATS
+        // ============================================
+        const statValues = document.querySelectorAll('.stat-value');
+
+        function animateCounter(element, target, suffix = '') {
+            const duration = 2000;
+            const startTime = performance.now();
+            const startValue = 0;
+
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Easing function (ease-out)
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const currentValue = Math.floor(startValue + (target - startValue) * easeOut);
+
+                element.textContent = currentValue + suffix;
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target + suffix;
+                }
+            }
+
+            requestAnimationFrame(updateCounter);
+        }
+
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
+                    const text = element.textContent.trim();
+
+                    // Parse the stat value
+                    let target, suffix;
+                    if (text.includes('M+')) {
+                        target = 1;
+                        suffix = 'M+';
+                    } else if (text.includes('%')) {
+                        target = parseInt(text);
+                        suffix = '%';
+                    } else if (text.includes('+')) {
+                        target = parseInt(text);
+                        suffix = '+';
+                    } else if (text.includes('/')) {
+                        // For "24/7", just show it as-is with a fade
+                        element.style.opacity = '0';
+                        element.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                            element.style.opacity = '1';
+                            element.style.transform = 'translateY(0)';
+                        }, 100);
+                        statObserver.unobserve(element);
+                        return;
+                    } else {
+                        target = parseInt(text);
+                        suffix = '';
+                    }
+
+                    element.textContent = '0' + suffix;
+                    animateCounter(element, target, suffix);
+                    statObserver.unobserve(element);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        statValues.forEach(stat => statObserver.observe(stat));
+
+        // ============================================
+        // 6. MAGNETIC BUTTON EFFECT
+        // ============================================
+        const magneticButtons = document.querySelectorAll('.btn');
+
+        if (!prefersReducedMotion) {
+            magneticButtons.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+
+                    btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+                });
+
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transform = 'translate(0, 0)';
+                });
+            });
+        }
+
+        // ============================================
+        // 7. TEXT REVEAL ANIMATION FOR SECTION TITLES
+        // ============================================
+        const sectionTitles = document.querySelectorAll('.section-title');
+
+        if (!prefersReducedMotion) {
+            const titleObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        titleObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            sectionTitles.forEach(title => {
+                // Wrap words in spans for animation
+                const words = title.textContent.split(' ');
+                title.innerHTML = words.map((word, i) =>
+                    `<span class="word" style="animation-delay: ${i * 0.05}s">${word}</span>`
+                ).join(' ');
+                title.classList.add('reveal-text');
+                titleObserver.observe(title);
+            });
+        }
+
+        // ============================================
+        // 8. PARALLAX SCROLL EFFECT
+        // ============================================
+        if (!prefersReducedMotion) {
+            const parallaxElements = document.querySelectorAll('.gradient-blob');
+
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                parallaxElements.forEach((el, index) => {
+                    const speed = 0.1 + (index * 0.05);
+                    el.style.transform = `translateY(${scrollY * speed}px)`;
+                });
+            }, { passive: true });
+        }
+
+        // ============================================
+        // 9. SMOOTH ENTRANCE FOR CARDS
+        // ============================================
+        const allCards = document.querySelectorAll('.service-card, .portfolio-card, .testimonial-card, .process-step');
+
+        const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 100);
+                    cardObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        allCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            cardObserver.observe(card);
+        });
+
+        // ============================================
+        // 10. NAV LINK ACTIVE STATE ON SCROLL
+        // ============================================
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-list a');
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' });
+
+        sections.forEach(section => sectionObserver.observe(section));
+
+        console.log('✨ Eregion Labs - Elite visual effects loaded');
     </script>
 </body>
 </html>
