@@ -7,6 +7,7 @@
     <meta name="keywords" content="app development, mobile apps, web applications, software development, iOS, Android, startup, enterprise">
     <meta name="author" content="Eregion Labs LLC">
     <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://eregionlabs.com/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -20,6 +21,7 @@
     <meta name="twitter:url" content="https://eregionlabs.com/">
     <meta name="twitter:title" content="Eregion Labs - Exceptional App Development">
     <meta name="twitter:description" content="We craft exceptional mobile and web applications that drive business growth.">
+    <meta name="twitter:image" content="https://eregionlabs.com/og-image.png">
 
     <!-- Favicon - Polar Star by Delapouite, game-icons.net, CC BY 3.0 -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2310B981'/%3E%3Cstop offset='100%25' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M255.9 19.77C241.5 109.6 229.4 163 196.2 196.2c-33.2 33.2-86.6 45.3-176.43 59.7C109.6 270.3 163 282.4 196.2 315.7c33.2 33.2 45.3 86.6 59.7 176.5 14.4-89.9 26.5-143.3 59.7-176.6 33.3-33.2 86.7-45.3 176.6-59.7-89.9-14.4-143.3-26.5-176.5-59.7-33.3-33.2-45.4-86.6-59.8-176.43zM423 89c-45.8 33.1-81 56.9-112.4 70.2 5.1 9.4 11 17.4 17.8 24.2 6.8 6.8 14.8 12.7 24.3 17.9 13.4-31.4 37.2-66.6 70.3-112.3zm-333.94.06C122.2 134.8 145.9 169.9 159.2 201.2c9.4-5.1 17.4-11 24.2-17.8 6.8-6.8 12.7-14.8 17.8-24.2-31.3-13.3-66.4-37-112.14-70.14zM352.7 310.5c-9.5 5.2-17.5 11.1-24.3 17.9-6.8 6.8-12.7 14.8-17.9 24.3C342 366 377.2 389.8 423 423c-33.2-45.8-57-81-70.3-112.5zm-193.5.1C145.9 342 122.1 377.2 89 423c45.7-33.1 80.9-56.9 112.3-70.3-5.2-9.5-11.1-17.5-17.9-24.3-6.8-6.8-14.8-12.7-24.2-17.8z' fill='url(%23g)'/%3E%3C/svg%3E">
@@ -563,6 +565,109 @@
         .btn-icon {
             width: 20px;
             height: 20px;
+        }
+
+        /* ============================================
+           FORM STYLES
+           ============================================ */
+        .contact-form {
+            display: grid;
+            gap: var(--space-6);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: grid;
+            gap: var(--space-6);
+        }
+
+        @media (min-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .form-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+        }
+
+        .form-label .required {
+            color: var(--color-accent-primary);
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-4);
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            color: var(--color-text-primary);
+            background: var(--color-bg-glass);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        .form-input:hover,
+        .form-textarea:hover {
+            border-color: var(--color-border-hover);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-accent-primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            justify-self: center;
+        }
+
+        .form-success {
+            text-align: center;
+            padding: var(--space-8);
+            background: var(--gradient-subtle);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-xl);
+        }
+
+        .form-success-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--space-4);
+            color: var(--color-accent-primary);
+        }
+
+        .form-success h3 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-2);
+        }
+
+        .form-success p {
+            color: var(--color-text-secondary);
         }
 
         /* ============================================
@@ -1271,7 +1376,7 @@
             line-height: var(--line-height-relaxed);
         }
 
-        .footer-column h4 {
+        .footer-column h3 {
             font-size: var(--font-size-sm);
             font-weight: var(--font-weight-semibold);
             text-transform: uppercase;
@@ -2748,21 +2853,53 @@
             </div>
         </section>
 
-        <!-- CTA Section -->
-        <section id="contact" class="section cta-section" aria-labelledby="cta-title">
+        <!-- Contact Section -->
+        <section id="contact" class="section cta-section" aria-labelledby="contact-title">
             <div class="container">
                 <div class="cta-content fade-in">
-                    <h2 id="cta-title" class="cta-title">Ready to build something amazing?</h2>
+                    <h2 id="contact-title" class="cta-title">Ready to build something amazing?</h2>
                     <p class="cta-description">
                         Let's discuss your project and see how we can help bring your vision to life.
                     </p>
-                    <a href="mailto:info@eregionlabs.com" class="btn btn-primary">
-                        Contact Us
+                </div>
+
+                <form id="contact-form" class="contact-form fade-in" action="https://formspree.io/f/xpwzgvog" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Name <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company" class="form-label">Company</label>
+                        <input type="text" id="company" name="company" class="form-input" placeholder="Your company (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message <span class="required">*</span></label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="Tell us about your project..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary form-submit">
+                        Send Message
                         <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z"/>
-                            <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z"/>
+                            <path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.925A1.5 1.5 0 005.135 9.25h6.115a.75.75 0 010 1.5H5.135a1.5 1.5 0 00-1.442 1.086l-1.414 4.926a.75.75 0 00.826.95 28.896 28.896 0 0015.293-7.154.75.75 0 000-1.115A28.897 28.897 0 003.105 2.289z"/>
                         </svg>
-                    </a>
+                    </button>
+                </form>
+
+                <div id="form-success" class="form-success fade-in" style="display: none;">
+                    <svg class="form-success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    <h3>Message Sent!</h3>
+                    <p>Thanks for reaching out. We'll get back to you within 24 hours.</p>
                 </div>
             </div>
         </section>
@@ -2802,7 +2939,7 @@
                 </div>
 
                 <div class="footer-column">
-                    <h4>Services</h4>
+                    <h3>Services</h3>
                     <ul>
                         <li><a href="#services">Mobile Apps</a></li>
                         <li><a href="#services">Web Applications</a></li>
@@ -2812,7 +2949,7 @@
                 </div>
 
                 <div class="footer-column">
-                    <h4>Company</h4>
+                    <h3>Company</h3>
                     <ul>
                         <li><a href="#about">About</a></li>
                         <li><a href="#process">Process</a></li>
@@ -2821,7 +2958,7 @@
                 </div>
 
                 <div class="footer-column">
-                    <h4>Contact</h4>
+                    <h3>Contact</h3>
                     <ul>
                         <li><a href="mailto:info@eregionlabs.com">info@eregionlabs.com</a></li>
                     </ul>
@@ -3428,6 +3565,45 @@
 
         console.log('✨ Eregion Labs - Elite visual effects loaded');
         console.log('🚀 Next-level effects activated');
+
+        // ============================================
+        // CONTACT FORM HANDLING
+        // ============================================
+        const contactForm = document.getElementById('contact-form');
+        const formSuccess = document.getElementById('form-success');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Sending...';
+                submitBtn.disabled = true;
+
+                try {
+                    const response = await fetch(contactForm.action, {
+                        method: 'POST',
+                        body: new FormData(contactForm),
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        contactForm.style.display = 'none';
+                        formSuccess.style.display = 'block';
+                        formSuccess.classList.add('visible');
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                } catch (error) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    alert('There was an error sending your message. Please try again or email us directly at info@eregionlabs.com');
+                }
+            });
+        }
     </script>
 </body>
 </html>

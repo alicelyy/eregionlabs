@@ -1,0 +1,11 @@
+# Robots.txt for Eregion Labs
+# https://eregionlabs.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://eregionlabs.com/sitemap.xml
+
+# Crawl-delay (optional, be polite to crawlers)
+Crawl-delay: 1
