@@ -3474,6 +3474,49 @@
                 let isDeleting = false;
                 let currentWord = words[0];
 
+                // Smart fix: Prevent layout shift by measuring all phrases and setting min-height
+                function preventLayoutShift() {
+                    const originalText = gradientText.textContent;
+                    let maxHeight = 0;
+
+                    // Measure each phrase to find the tallest one
+                    words.forEach(word => {
+                        gradientText.textContent = word;
+                        const height = heroTitle.offsetHeight;
+                        if (height > maxHeight) {
+                            maxHeight = height;
+                        }
+                    });
+
+                    // Set min-height to prevent shift when text wraps differently
+                    heroTitle.style.minHeight = maxHeight + 'px';
+
+                    // Restore original text
+                    gradientText.textContent = originalText;
+
+                    // Re-measure on resize (debounced)
+                    let resizeTimeout;
+                    window.addEventListener('resize', () => {
+                        clearTimeout(resizeTimeout);
+                        resizeTimeout = setTimeout(() => {
+                            heroTitle.style.minHeight = '';
+                            let newMaxHeight = 0;
+                            words.forEach(word => {
+                                gradientText.textContent = word;
+                                const height = heroTitle.offsetHeight;
+                                if (height > newMaxHeight) {
+                                    newMaxHeight = height;
+                                }
+                            });
+                            heroTitle.style.minHeight = newMaxHeight + 'px';
+                            gradientText.textContent = words[wordIndex].substring(0, charIndex);
+                        }, 150);
+                    });
+                }
+
+                // Initialize layout shift prevention
+                preventLayoutShift();
+
                 function typeWriter() {
                     const current = words[wordIndex];
 
