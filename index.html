@@ -712,6 +712,9 @@
         .section {
             padding: var(--space-24) 0;
             position: relative;
+            /* Skip rendering off-screen sections for faster initial load */
+            content-visibility: auto;
+            contain-intrinsic-size: auto 800px;
         }
 
         .section-header {
@@ -3188,6 +3191,12 @@
             if (now - lastTapTime < TAP_DEBOUNCE) return;
             lastTapTime = now;
 
+            // Sync JS state with DOM state as safeguard against desync
+            const domMenuOpen = nav && nav.classList.contains('active');
+            if (isMenuOpen !== domMenuOpen) {
+                isMenuOpen = domMenuOpen;
+            }
+
             if (isMenuOpen) {
                 closeMenu();
             } else {
@@ -3196,77 +3205,32 @@
         }
 
         if (menuToggle) {
-            // Use pointer events for unified touch/mouse handling
-            // Falls back gracefully on older browsers
-            if (window.PointerEvent) {
-                let isPointerDown = false;
-                let startX = 0;
-                let startY = 0;
-                const MOVE_THRESHOLD = 10; // pixels of movement to cancel tap
+            // Track if touch was used to prevent double-firing with click
+            let touchHandled = false;
 
-                menuToggle.addEventListener('pointerdown', (e) => {
-                    isPointerDown = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    // Capture pointer for reliable tracking
-                    menuToggle.setPointerCapture(e.pointerId);
-                }, { passive: true });
+            // Touch events for immediate response on mobile
+            menuToggle.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                touchHandled = true;
+                toggleMenu(e);
+                // Reset after a short delay
+                setTimeout(() => { touchHandled = false; }, 300);
+            }, { passive: false });
 
-                menuToggle.addEventListener('pointermove', (e) => {
-                    if (!isPointerDown) return;
-                    // Cancel if user moved too much (scrolling, not tapping)
-                    const dx = Math.abs(e.clientX - startX);
-                    const dy = Math.abs(e.clientY - startY);
-                    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
-                        isPointerDown = false;
-                    }
-                }, { passive: true });
+            // Prevent touchmove from scrolling when on the button
+            menuToggle.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            }, { passive: false });
 
-                menuToggle.addEventListener('pointerup', (e) => {
-                    if (isPointerDown) {
-                        toggleMenu(e);
-                    }
-                    isPointerDown = false;
-                });
-
-                menuToggle.addEventListener('pointercancel', () => {
-                    isPointerDown = false;
-                });
-            } else {
-                // Fallback for browsers without pointer events
-                let touchStarted = false;
-                let touchStartX = 0;
-                let touchStartY = 0;
-
-                menuToggle.addEventListener('touchstart', (e) => {
-                    touchStarted = true;
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                }, { passive: true });
-
-                menuToggle.addEventListener('touchmove', (e) => {
-                    if (!touchStarted) return;
-                    const dx = Math.abs(e.touches[0].clientX - touchStartX);
-                    const dy = Math.abs(e.touches[0].clientY - touchStartY);
-                    if (dx > 10 || dy > 10) {
-                        touchStarted = false;
-                    }
-                }, { passive: true });
-
-                menuToggle.addEventListener('touchend', (e) => {
-                    if (touchStarted) {
-                        toggleMenu(e);
-                    }
-                    touchStarted = false;
-                }, { passive: false });
-
-                // Click event for mouse users
-                menuToggle.addEventListener('click', (e) => {
-                    if (!touchStarted) {
-                        toggleMenu(e);
-                    }
-                });
-            }
+            // Click handler as failsafe for mouse users and accessibility
+            // Only fires if touch wasn't just handled
+            menuToggle.addEventListener('click', (e) => {
+                if (touchHandled) return; // Touch already handled this
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu(e);
+            });
         }
 
         // Close menu when clicking nav links
@@ -3345,6 +3309,8 @@
         if (canvas && ctx && !prefersReducedMotion) {
             let particles = [];
             let mouse = { x: null, y: null, radius: 150 };
+            let isAnimating = true; // Track if animation should run
+            let animationId = null;
 
             function resizeCanvas() {
                 const hero = document.querySelector('.hero');
@@ -3403,7 +3369,13 @@
 
             function initParticles() {
                 particles = [];
-                const numberOfParticles = Math.floor((canvas.width * canvas.height) / 12000);
+                // Reduce particles on mobile for better performance
+                const isMobile = window.innerWidth <= 768;
+                const divisor = isMobile ? 20000 : 12000;
+                const numberOfParticles = Math.min(
+                    Math.floor((canvas.width * canvas.height) / divisor),
+                    isMobile ? 40 : 80 // Cap max particles
+                );
                 for (let i = 0; i < numberOfParticles; i++) {
                     particles.push(new Particle());
                 }
@@ -3411,13 +3383,21 @@
 
             function connectParticles() {
                 const maxDistance = 120;
+                const maxDistSq = maxDistance * maxDistance; // Pre-calculate squared distance
                 for (let a = 0; a < particles.length; a++) {
                     for (let b = a + 1; b < particles.length; b++) {
                         let dx = particles[a].x - particles[b].x;
+                        // Early exit if x distance alone exceeds max
+                        if (Math.abs(dx) > maxDistance) continue;
                         let dy = particles[a].y - particles[b].y;
-                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        // Early exit if y distance alone exceeds max
+                        if (Math.abs(dy) > maxDistance) continue;
 
-                        if (distance < maxDistance) {
+                        // Use squared distance to avoid expensive sqrt
+                        let distSq = dx * dx + dy * dy;
+
+                        if (distSq < maxDistSq) {
+                            let distance = Math.sqrt(distSq); // Only sqrt when needed
                             let opacity = 1 - (distance / maxDistance);
                             ctx.strokeStyle = `rgba(16, 185, 129, ${opacity * 0.3})`;
                             ctx.lineWidth = 1;
@@ -3431,21 +3411,43 @@
             }
 
             function animateParticles() {
+                if (!isAnimating) return; // Don't animate when not visible
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 particles.forEach(particle => {
                     particle.update();
                     particle.draw();
                 });
                 connectParticles();
-                requestAnimationFrame(animateParticles);
+                animationId = requestAnimationFrame(animateParticles);
             }
 
             const hero = document.querySelector('.hero');
+
+            // Pause animation when hero section not visible (saves CPU/battery)
+            const heroObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (!isAnimating) {
+                            isAnimating = true;
+                            animateParticles();
+                        }
+                    } else {
+                        isAnimating = false;
+                        if (animationId) {
+                            cancelAnimationFrame(animationId);
+                            animationId = null;
+                        }
+                    }
+                });
+            }, { threshold: 0 });
+            heroObserver.observe(hero);
+
             hero.addEventListener('mousemove', (e) => {
                 const rect = canvas.getBoundingClientRect();
                 mouse.x = e.clientX - rect.left;
                 mouse.y = e.clientY - rect.top;
-            });
+            }, { passive: true });
 
             hero.addEventListener('mouseleave', () => {
                 mouse.x = null;
