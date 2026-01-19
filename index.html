@@ -434,8 +434,19 @@
         .menu-toggle {
             display: none;
             flex-direction: column;
-            gap: 5px;
-            padding: var(--space-2);
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .menu-toggle span {
@@ -443,7 +454,21 @@
             width: 24px;
             height: 2px;
             background: var(--color-text-primary);
-            transition: transform var(--transition-fast), opacity var(--transition-fast);
+            border-radius: 1px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        background 0.2s ease;
+            pointer-events: none;
+        }
+
+        .menu-toggle:active span {
+            background: var(--color-accent);
+        }
+
+        @media (hover: hover) {
+            .menu-toggle:hover span {
+                background: var(--color-accent);
+            }
         }
 
         /* ============================================
@@ -1531,22 +1556,30 @@
             .menu-toggle {
                 display: flex;
                 position: fixed;
-                top: var(--space-4);
-                right: var(--container-padding);
-                z-index: calc(var(--z-overlay) + 1);
+                top: calc(var(--space-4) - 4px);
+                right: calc(var(--container-padding) - 12px);
+                z-index: calc(var(--z-modal) + 10);
+                background: transparent;
+                border-radius: var(--radius-md);
+                transition: background 0.2s ease;
+            }
+
+            .menu-toggle:active {
+                background: rgba(255, 255, 255, 0.1);
             }
 
             /* Hamburger to X animation */
             .menu-toggle[aria-expanded="true"] span:nth-child(1) {
-                transform: translateY(7px) rotate(45deg);
+                transform: translateY(8px) rotate(45deg);
             }
 
             .menu-toggle[aria-expanded="true"] span:nth-child(2) {
                 opacity: 0;
+                transform: scaleX(0);
             }
 
             .menu-toggle[aria-expanded="true"] span:nth-child(3) {
-                transform: translateY(-7px) rotate(-45deg);
+                transform: translateY(-8px) rotate(-45deg);
             }
 
             /* Prevent body scroll when menu is open */
@@ -3035,38 +3068,102 @@
             observer.observe(el);
         });
 
-        // Mobile menu toggle
+        // Mobile menu toggle with improved touch handling
         const menuToggle = document.querySelector('.menu-toggle');
         const nav = document.querySelector('.nav');
+        let menuIsAnimating = false;
+        let lastToggleTime = 0;
+        const DEBOUNCE_DELAY = 300;
 
         function closeMenu() {
+            if (!menuToggle || !nav) return;
             menuToggle.setAttribute('aria-expanded', 'false');
             nav.classList.remove('active');
             document.body.classList.remove('menu-open');
         }
 
         function openMenu() {
+            if (!menuToggle || !nav) return;
             menuToggle.setAttribute('aria-expanded', 'true');
             nav.classList.add('active');
             document.body.classList.add('menu-open');
         }
 
-        menuToggle?.addEventListener('click', () => {
+        function toggleMenu(e) {
+            // Prevent default to avoid ghost clicks and double firing
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Debounce: prevent rapid consecutive toggles
+            const now = Date.now();
+            if (now - lastToggleTime < DEBOUNCE_DELAY) {
+                return;
+            }
+            lastToggleTime = now;
+
+            // Prevent toggle during animation
+            if (menuIsAnimating) return;
+            menuIsAnimating = true;
+
             const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
             if (isExpanded) {
                 closeMenu();
             } else {
                 openMenu();
             }
-        });
+
+            // Reset animation lock after transition completes
+            setTimeout(() => {
+                menuIsAnimating = false;
+            }, DEBOUNCE_DELAY);
+        }
+
+        if (menuToggle) {
+            // Touch events for faster mobile response
+            let touchStarted = false;
+
+            menuToggle.addEventListener('touchstart', (e) => {
+                touchStarted = true;
+            }, { passive: true });
+
+            menuToggle.addEventListener('touchend', (e) => {
+                if (touchStarted) {
+                    toggleMenu(e);
+                    touchStarted = false;
+                }
+            }, { passive: false });
+
+            // Cancel touch on touchmove (user is scrolling, not tapping)
+            menuToggle.addEventListener('touchmove', () => {
+                touchStarted = false;
+            }, { passive: true });
+
+            // Click event for mouse users and accessibility
+            menuToggle.addEventListener('click', (e) => {
+                // Only handle click if not from touch (prevents double-firing)
+                if (!touchStarted) {
+                    toggleMenu(e);
+                }
+            });
+        }
 
         // Close mobile menu when clicking a nav link
         nav?.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 if (nav.classList.contains('active')) {
-                    closeMenu();
+                    // Small delay to allow the click to register for navigation
+                    setTimeout(closeMenu, 50);
                 }
             });
+
+            // Also handle touch for nav links
+            link.addEventListener('touchend', () => {
+                if (nav.classList.contains('active')) {
+                    setTimeout(closeMenu, 50);
+                }
+            }, { passive: true });
         });
 
         // Close mobile menu on escape key
@@ -3074,6 +3171,14 @@
             if (e.key === 'Escape' && nav?.classList.contains('active')) {
                 closeMenu();
                 menuToggle?.focus();
+            }
+        });
+
+        // Close menu when clicking outside (on the overlay background)
+        nav?.addEventListener('click', (e) => {
+            // Only close if clicking directly on the nav overlay, not its children
+            if (e.target === nav && nav.classList.contains('active')) {
+                closeMenu();
             }
         });
 
