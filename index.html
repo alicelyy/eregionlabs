@@ -430,7 +430,7 @@
             box-shadow: var(--shadow-glow);
         }
 
-        /* Mobile menu button */
+        /* Mobile menu button - optimized for touch */
         .menu-toggle {
             display: none;
             flex-direction: column;
@@ -439,14 +439,21 @@
             gap: 6px;
             width: 48px;
             height: 48px;
+            min-width: 48px;
+            min-height: 48px;
             padding: 0;
             border: none;
             background: transparent;
             cursor: pointer;
+            /* Critical for touch responsiveness */
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
             user-select: none;
             -webkit-user-select: none;
+            -ms-user-select: none;
+            /* Ensure it's tappable */
+            position: relative;
+            z-index: 1;
         }
 
         .menu-toggle span {
@@ -455,19 +462,23 @@
             height: 2px;
             background: var(--color-text-primary);
             border-radius: 1px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                        background 0.2s ease;
+            transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                        background 150ms ease;
             pointer-events: none;
+            /* Prevent span from interfering with touch */
+            will-change: transform, opacity;
         }
 
+        /* Immediate visual feedback */
         .menu-toggle:active span {
-            background: var(--color-accent);
+            background: var(--color-accent-primary);
         }
 
-        @media (hover: hover) {
+        /* Hover effect only for mouse users */
+        @media (hover: hover) and (pointer: fine) {
             .menu-toggle:hover span {
-                background: var(--color-accent);
+                background: var(--color-accent-primary);
             }
         }
 
@@ -1490,13 +1501,17 @@
                 --container-padding: var(--space-4);
             }
 
-            /* Mobile menu overlay */
+            /* Mobile menu overlay - Full screen with proper iOS handling */
             .nav {
+                display: flex;
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 bottom: 0;
+                width: 100%;
+                height: 100%;
+                height: 100dvh; /* Dynamic viewport height for mobile browsers */
                 background: rgba(9, 9, 11, 0.98);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
@@ -1506,13 +1521,19 @@
                 gap: var(--space-8);
                 opacity: 0;
                 visibility: hidden;
-                transition: opacity var(--transition-base), visibility var(--transition-base);
-                z-index: var(--z-overlay);
+                pointer-events: none;
+                transition: opacity 200ms ease, visibility 200ms ease;
+                z-index: var(--z-modal);
+                /* Prevent scroll chaining on iOS */
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                overflow: hidden;
             }
 
             .nav.active {
                 opacity: 1;
                 visibility: visible;
+                pointer-events: auto;
             }
 
             .nav-list {
@@ -1522,50 +1543,61 @@
                 gap: var(--space-6);
                 opacity: 0;
                 transform: translateY(20px);
-                transition: opacity var(--transition-slow), transform var(--transition-slow);
+                transition: opacity 250ms ease, transform 250ms ease;
                 transition-delay: 0s;
             }
 
             .nav.active .nav-list {
                 opacity: 1;
                 transform: translateY(0);
-                transition-delay: 0.1s;
+                transition-delay: 50ms;
             }
 
             .nav-list .nav-link {
                 font-size: var(--font-size-2xl);
                 font-weight: var(--font-weight-semibold);
+                padding: var(--space-2) var(--space-4);
+                /* Larger touch target */
+                min-height: 44px;
+                display: flex;
+                align-items: center;
             }
 
             .nav-cta {
                 display: inline-flex;
                 opacity: 0;
                 transform: translateY(20px);
-                transition: opacity var(--transition-slow), transform var(--transition-slow);
+                transition: opacity 250ms ease, transform 250ms ease;
                 transition-delay: 0s;
                 padding: var(--space-4) var(--space-8);
                 font-size: var(--font-size-lg);
+                /* Larger touch target */
+                min-height: 48px;
             }
 
             .nav.active .nav-cta {
                 opacity: 1;
                 transform: translateY(0);
-                transition-delay: 0.2s;
+                transition-delay: 100ms;
             }
 
             .menu-toggle {
                 display: flex;
                 position: fixed;
-                top: calc(var(--space-4) - 4px);
-                right: calc(var(--container-padding) - 12px);
+                top: var(--space-4);
+                right: var(--space-4);
                 z-index: calc(var(--z-modal) + 10);
                 background: transparent;
                 border-radius: var(--radius-md);
-                transition: background 0.2s ease;
+                transition: background 150ms ease, transform 100ms ease;
+                /* Prevent iOS tap highlight */
+                -webkit-tap-highlight-color: transparent;
             }
 
+            /* Immediate visual feedback on touch */
             .menu-toggle:active {
-                background: rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.15);
+                transform: scale(0.95);
             }
 
             /* Hamburger to X animation */
@@ -1582,8 +1614,19 @@
                 transform: translateY(-8px) rotate(-45deg);
             }
 
-            /* Prevent body scroll when menu is open */
+            /* Robust body scroll lock for iOS Safari */
             body.menu-open {
+                overflow: hidden;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                /* Touch action to prevent scroll on body */
+                touch-action: none;
+                -webkit-overflow-scrolling: none;
+            }
+
+            /* Ensure html doesn't scroll either */
+            html.menu-open {
                 overflow: hidden;
             }
 
@@ -3068,116 +3111,201 @@
             observer.observe(el);
         });
 
-        // Mobile menu toggle with improved touch handling
+        // ============================================
+        // MOBILE MENU - Reimplemented for reliability
+        // ============================================
         const menuToggle = document.querySelector('.menu-toggle');
         const nav = document.querySelector('.nav');
-        let menuIsAnimating = false;
-        let lastToggleTime = 0;
-        const DEBOUNCE_DELAY = 300;
 
-        function closeMenu() {
-            if (!menuToggle || !nav) return;
-            menuToggle.setAttribute('aria-expanded', 'false');
-            nav.classList.remove('active');
-            document.body.classList.remove('menu-open');
+        // State management
+        let scrollPosition = 0;
+        let isMenuOpen = false;
+        let lastTapTime = 0;
+        const TAP_DEBOUNCE = 100; // Reduced for faster response
+
+        /**
+         * Lock body scroll - handles iOS Safari properly
+         */
+        function lockBodyScroll() {
+            scrollPosition = window.pageYOffset;
+            document.body.style.top = `-${scrollPosition}px`;
+            document.body.classList.add('menu-open');
+            document.documentElement.classList.add('menu-open');
         }
 
+        /**
+         * Unlock body scroll - restore position for iOS Safari
+         */
+        function unlockBodyScroll() {
+            document.body.classList.remove('menu-open');
+            document.documentElement.classList.remove('menu-open');
+            document.body.style.top = '';
+            window.scrollTo(0, scrollPosition);
+        }
+
+        /**
+         * Open the mobile menu
+         */
         function openMenu() {
-            if (!menuToggle || !nav) return;
+            if (!menuToggle || !nav || isMenuOpen) return;
+
+            isMenuOpen = true;
             menuToggle.setAttribute('aria-expanded', 'true');
             nav.classList.add('active');
-            document.body.classList.add('menu-open');
+            lockBodyScroll();
+
+            // Focus trap - focus the nav for accessibility
+            nav.setAttribute('tabindex', '-1');
+            nav.focus();
         }
 
+        /**
+         * Close the mobile menu
+         */
+        function closeMenu() {
+            if (!menuToggle || !nav || !isMenuOpen) return;
+
+            isMenuOpen = false;
+            menuToggle.setAttribute('aria-expanded', 'false');
+            nav.classList.remove('active');
+            unlockBodyScroll();
+
+            // Return focus to menu toggle for accessibility
+            menuToggle.focus();
+        }
+
+        /**
+         * Toggle menu state with debounce protection
+         */
         function toggleMenu(e) {
-            // Prevent default to avoid ghost clicks and double firing
             if (e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
 
-            // Debounce: prevent rapid consecutive toggles
+            // Simple debounce to prevent accidental double-taps
             const now = Date.now();
-            if (now - lastToggleTime < DEBOUNCE_DELAY) {
-                return;
-            }
-            lastToggleTime = now;
+            if (now - lastTapTime < TAP_DEBOUNCE) return;
+            lastTapTime = now;
 
-            // Prevent toggle during animation
-            if (menuIsAnimating) return;
-            menuIsAnimating = true;
-
-            const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
-            if (isExpanded) {
+            if (isMenuOpen) {
                 closeMenu();
             } else {
                 openMenu();
             }
-
-            // Reset animation lock after transition completes
-            setTimeout(() => {
-                menuIsAnimating = false;
-            }, DEBOUNCE_DELAY);
         }
 
         if (menuToggle) {
-            // Touch events for faster mobile response
-            let touchStarted = false;
+            // Use pointer events for unified touch/mouse handling
+            // Falls back gracefully on older browsers
+            if (window.PointerEvent) {
+                let isPointerDown = false;
+                let startX = 0;
+                let startY = 0;
+                const MOVE_THRESHOLD = 10; // pixels of movement to cancel tap
 
-            menuToggle.addEventListener('touchstart', (e) => {
-                touchStarted = true;
-            }, { passive: true });
+                menuToggle.addEventListener('pointerdown', (e) => {
+                    isPointerDown = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    // Capture pointer for reliable tracking
+                    menuToggle.setPointerCapture(e.pointerId);
+                }, { passive: true });
 
-            menuToggle.addEventListener('touchend', (e) => {
-                if (touchStarted) {
-                    toggleMenu(e);
+                menuToggle.addEventListener('pointermove', (e) => {
+                    if (!isPointerDown) return;
+                    // Cancel if user moved too much (scrolling, not tapping)
+                    const dx = Math.abs(e.clientX - startX);
+                    const dy = Math.abs(e.clientY - startY);
+                    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
+                        isPointerDown = false;
+                    }
+                }, { passive: true });
+
+                menuToggle.addEventListener('pointerup', (e) => {
+                    if (isPointerDown) {
+                        toggleMenu(e);
+                    }
+                    isPointerDown = false;
+                });
+
+                menuToggle.addEventListener('pointercancel', () => {
+                    isPointerDown = false;
+                });
+            } else {
+                // Fallback for browsers without pointer events
+                let touchStarted = false;
+                let touchStartX = 0;
+                let touchStartY = 0;
+
+                menuToggle.addEventListener('touchstart', (e) => {
+                    touchStarted = true;
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+
+                menuToggle.addEventListener('touchmove', (e) => {
+                    if (!touchStarted) return;
+                    const dx = Math.abs(e.touches[0].clientX - touchStartX);
+                    const dy = Math.abs(e.touches[0].clientY - touchStartY);
+                    if (dx > 10 || dy > 10) {
+                        touchStarted = false;
+                    }
+                }, { passive: true });
+
+                menuToggle.addEventListener('touchend', (e) => {
+                    if (touchStarted) {
+                        toggleMenu(e);
+                    }
                     touchStarted = false;
-                }
-            }, { passive: false });
+                }, { passive: false });
 
-            // Cancel touch on touchmove (user is scrolling, not tapping)
-            menuToggle.addEventListener('touchmove', () => {
-                touchStarted = false;
-            }, { passive: true });
-
-            // Click event for mouse users and accessibility
-            menuToggle.addEventListener('click', (e) => {
-                // Only handle click if not from touch (prevents double-firing)
-                if (!touchStarted) {
-                    toggleMenu(e);
-                }
-            });
+                // Click event for mouse users
+                menuToggle.addEventListener('click', (e) => {
+                    if (!touchStarted) {
+                        toggleMenu(e);
+                    }
+                });
+            }
         }
 
-        // Close mobile menu when clicking a nav link
-        nav?.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (nav.classList.contains('active')) {
-                    // Small delay to allow the click to register for navigation
-                    setTimeout(closeMenu, 50);
+        // Close menu when clicking nav links
+        if (nav) {
+            nav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (isMenuOpen) {
+                        // Small delay to allow navigation to register
+                        setTimeout(closeMenu, 50);
+                    }
+                });
+            });
+
+            // Close when clicking on overlay background
+            nav.addEventListener('click', (e) => {
+                if (e.target === nav && isMenuOpen) {
+                    closeMenu();
                 }
             });
 
-            // Also handle touch for nav links
-            link.addEventListener('touchend', () => {
-                if (nav.classList.contains('active')) {
-                    setTimeout(closeMenu, 50);
+            // Prevent touch scrolling on the nav overlay itself
+            nav.addEventListener('touchmove', (e) => {
+                if (e.target === nav) {
+                    e.preventDefault();
                 }
-            }, { passive: true });
-        });
+            }, { passive: false });
+        }
 
-        // Close mobile menu on escape key
+        // Close on Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && nav?.classList.contains('active')) {
+            if (e.key === 'Escape' && isMenuOpen) {
                 closeMenu();
-                menuToggle?.focus();
             }
         });
 
-        // Close menu when clicking outside (on the overlay background)
-        nav?.addEventListener('click', (e) => {
-            // Only close if clicking directly on the nav overlay, not its children
-            if (e.target === nav && nav.classList.contains('active')) {
+        // Handle orientation changes and resize
+        window.addEventListener('resize', () => {
+            // Close menu on resize to desktop size
+            if (window.innerWidth > 1024 && isMenuOpen) {
                 closeMenu();
             }
         });
